@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Generator - AI Art Generator</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="landing-page">
+    <nav class="landing-nav">
+        <!-- UPDATED: Logo Image -->
+        <a href="/" class="logo">
+            <img src="/static/logo.jpeg" alt="Image Generator Logo">
+            Image<span>Generator</span>
+        </a>
+        <div>
+            <a href="/login" class="btn btn-outline">Log In</a>
+            <a href="/signup" class="btn btn-primary" style="margin-left: 10px;">Start Creating</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Turn Words into <br><span>Masterpieces</span></h1>
+        <p>The most advanced AI image generator for creators. Generate photorealistic images, digital art, and assets in seconds using the power of Flux.</p>
+        <a href="/signup" class="btn btn-primary btn-lg"><i class="fas fa-bolt"></i> Generate Now - Free</a>
+        
+        <div style="margin-top: 4rem; display: flex; gap: 1rem; justify-content: center; opacity: 0.8;">
+            <img src="https://image.pollinations.ai/prompt/cyberpunk%20city" style="width: 200px; height: 200px; border-radius: 12px; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <img src="https://image.pollinations.ai/prompt/oil%20painting%20cat" style="width: 200px; height: 200px; border-radius: 12px; object-fit: cover; transform: translateY(-20px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <img src="https://image.pollinations.ai/prompt/3d%20render%20abstract" style="width: 200px; height: 200px; border-radius: 12px; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+        </div>
+    </section>
+
+    <!-- NEW: Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="feature-card">
+                <i class="fas fa-magic feature-icon"></i>
+                <h3>State-of-the-Art AI</h3>
+                <p>Powered by the latest Flux models to understand complex prompts and deliver stunning details.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bolt feature-icon"></i>
+                <h3>Lightning Fast</h3>
+                <p>Generate high-resolution (1024x1024) images in seconds. No more waiting in long queues.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-palette feature-icon"></i>
+                <h3>Multiple Styles</h3>
+                <p>Switch between Photorealistic, Anime, Oil Painting, and 3D Render with a single click.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-download feature-icon"></i>
+                <h3>Instant Export</h3>
+                <p>Download your creations immediately and use them for your projects, completely royalty-free.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+        <p>&copy; 2026 Image Generator AI. All rights reserved.</p>
+    </footer>
+</body>
+</html>
