@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Studio | Image Generator</title>
+    <title>Studio | Pixel Master</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13,10 +13,10 @@
             <a href="{{ url_for('index') }}" class="sidebar-icon" title="Home"><i class="fas fa-cube"></i></a>
             <a href="{{ url_for('dashboard') }}" class="sidebar-icon active" title="Studio"><i class="fas fa-magic"></i></a>
             
-            <!-- Gallery Button with OnClick -->
-            <div class="sidebar-icon" onclick="scrollToHistory()" style="cursor: pointer;" title="View History">
+            <!-- Link to Gallery Page -->
+            <a href="{{ url_for('gallery') }}" class="sidebar-icon" title="View Gallery">
                 <i class="fas fa-images"></i>
-            </div>
+            </a>
             
             <div style="flex:1"></div>
             

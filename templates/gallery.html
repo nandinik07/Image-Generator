@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gallery | Pixel Master</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="{{ url_for('index') }}" class="sidebar-icon" title="Home"><i class="fas fa-cube"></i></a>
+            <a href="{{ url_for('dashboard') }}" class="sidebar-icon" title="Studio"><i class="fas fa-magic"></i></a>
+            <a href="{{ url_for('gallery') }}" class="sidebar-icon active" title="Gallery"><i class="fas fa-images"></i></a>
+            
+            <div style="flex:1"></div>
+            
+            <a href="{{ url_for('login') }}" class="sidebar-icon" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+        </aside>
+
+        <div class="main-area">
+            <div class="gallery-container">
+                <div class="gallery-header">
+                    <h1>Your Masterpieces</h1>
+                    <p>View, manage, and download your generated artwork.</p>
+                </div>
+
+                {% if creations %}
+                <div class="gallery-grid">
+                    {% for item in creations %}
+                    <div class="gallery-card">
+                        <div class="gallery-image-wrapper">
+                            <img src="{{ item.image_data }}" alt="{{ item.prompt }}" loading="lazy">
+                            <div class="gallery-overlay-hover">
+                                <span class="badge">{{ item.style }}</span>
+                            </div>
+                        </div>
+                        <div class="gallery-info">
+                            <p class="gallery-prompt" title="{{ item.prompt }}">{{ item.prompt }}</p>
+                            <div class="gallery-actions">
+                                <span class="gallery-date">{{ item.created_at[:16] }}</span>
+                                <a href="{{ url_for('download_image', image_id=item.id) }}" class="btn-icon" title="Download PNG">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-gallery">
+                    <div class="empty-icon-bg">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <h3>No images yet</h3>
+                    <p>Go to the Studio to generate your first image!</p>
+                    <br>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Studio</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

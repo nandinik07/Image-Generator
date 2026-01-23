@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, send_file
 from config import Config
 from database import get_db_connection, init_db
 from services.image_service import ImageService
 import json
+import requests
+import io
 
 app = Flask(__name__)
 app.secret_key = Config.SECRET_KEY
@@ -19,6 +21,14 @@ def index():
 @app.route('/app')
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/gallery')
+def gallery():
+    conn = get_db_connection()
+    # Fetch all images for the user (demo user id 1), sorted by newest
+    creations = conn.execute('SELECT * FROM creations WHERE user_id = 1 ORDER BY created_at DESC').fetchall()
+    conn.close()
+    return render_template('gallery.html', creations=creations)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -80,6 +90,34 @@ def get_history():
     creations = conn.execute('SELECT * FROM creations WHERE user_id = 1 ORDER BY created_at DESC').fetchall()
     conn.close()
     return jsonify([dict(c) for c in creations])
+
+@app.route('/download/<int:image_id>')
+def download_image(image_id):
+    """
+    Proxy route to download the image from the external URL 
+    and serve it to the user as an attachment.
+    """
+    conn = get_db_connection()
+    image = conn.execute('SELECT * FROM creations WHERE id = ?', (image_id,)).fetchone()
+    conn.close()
+    
+    if image:
+        image_url = image['image_data']
+        try:
+            # Fetch the image content from the external URL
+            response = requests.get(image_url, timeout=30)
+            if response.status_code == 200:
+                # Use io.BytesIO to treat the raw bytes as a file
+                return send_file(
+                    io.BytesIO(response.content),
+                    mimetype='image/png',
+                    as_attachment=True,
+                    download_name=f"pixelmaster_{image_id}.png"
+                )
+        except Exception as e:
+            print(f"Download Error: {e}")
+            
+    return "Error downloading image", 404
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
