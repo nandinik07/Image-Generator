@@ -66,7 +66,7 @@ function generateImage() {
     
     loader.style.display = 'block';
     empty.style.display = 'none';
-    preview.style.display = 'none';
+    preview.style.display = 'none';  
 
     fetch('/api/generate', {
         method: 'POST',
