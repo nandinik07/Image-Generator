@@ -5,7 +5,7 @@ from config import Config
 
 class ImageService:
     @staticmethod
-    def generate_image(prompt, style="Realistic", size="1024x1024"):
+    def generate_image(prompt, style="Realistic", size="1024x1024", seed=None):
         """
         Generates an image using SiliconFlow API (Flux Model).
         Raises an Exception with the specific error message on failure.
@@ -15,7 +15,6 @@ class ImageService:
         if not api_key:
             raise Exception("Configuration Error: SiliconFlow API Key is missing in .env or config.py")
 
-        # UPDATED: Using the .com endpoint because the diagnostic confirmed this is where your key works.
         url = "https://api.siliconflow.com/v1/images/generations"
         
         headers = {
@@ -26,15 +25,22 @@ class ImageService:
         # Enhancing prompt - Flux works better with descriptive keywords
         full_prompt = f"{style} style, high quality, detailed: {prompt}"
         
-        # Generate a random seed for every request (0 to 4 billion)
-        random_seed = random.randint(0, 4294967295)
+        # Determine Seed
+        final_seed = None
+        if seed is not None and str(seed).strip() != "":
+            try:
+                final_seed = int(seed)
+            except ValueError:
+                final_seed = random.randint(0, 4294967295)
+        else:
+            final_seed = random.randint(0, 4294967295)
 
         # Payload
         payload = {
             "model": "black-forest-labs/FLUX.1-schnell",
             "prompt": full_prompt,
             "image_size": size,
-            "seed": random_seed
+            "seed": final_seed
         }
         
         try:
@@ -42,7 +48,6 @@ class ImageService:
             
             # Check for HTTP errors
             if response.status_code != 200:
-                # Try to parse the error JSON from SiliconFlow
                 try:
                     error_data = response.json()
                     error_msg = error_data.get('message', response.text)

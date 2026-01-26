@@ -5,61 +5,47 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Attach Generate Button Listener
     const genBtn = document.getElementById('genBtn');
     if (genBtn) {
-        // CRITICAL FIX: Remove legacy onclick from HTML if present to prevent double-firing
+        // Fix: Remove legacy onclick to prevent double-firing
         genBtn.removeAttribute('onclick');
-        
-        // Remove old listener if we are re-initializing
         genBtn.removeEventListener('click', generateImage);
         genBtn.addEventListener('click', generateImage);
     }
 
-    // 2. Load History on startup
+    // 2. Load History
     loadHistory();
 });
 
-// Functions
 function generateImage() {
     const btn = document.getElementById('genBtn');
     
-    // CRITICAL FIX: If button is already disabled (processing), stop immediately.
-    // This prevents double-clicks or duplicate events from firing two requests.
-    if (btn && btn.disabled) {
-        console.log("Button disabled, skipping duplicate click.");
-        return;
-    }
-
-    console.log("Generate button clicked");
+    if (btn && btn.disabled) return;
     
     const promptInput = document.getElementById('promptInput');
     const styleSelect = document.getElementById('styleSelect');
     const ratioSelect = document.getElementById('ratioSelect');
+    const seedInput = document.getElementById('seedInput'); 
     
-    // Safety check
-    if (!promptInput || !styleSelect || !ratioSelect) {
-        console.error("Missing input elements");
-        return;
-    }
+    if (!promptInput || !styleSelect || !ratioSelect) return;
 
     const prompt = promptInput.value;
     const style = styleSelect.value;
     const ratio = ratioSelect.value;
+    const seed = seedInput ? seedInput.value : null;
     
-    // Elements for UI updates
+    // UI Updates
     const btnSpan = btn.querySelector('span');
     const btnIcon = btn.querySelector('i');
-    
     const loader = document.getElementById('loader');
     const preview = document.getElementById('previewImage');
     const empty = document.getElementById('emptyState');
 
     if (!prompt) {
-        // Simple shake animation for visual feedback if empty
         promptInput.style.borderColor = '#f43f5e';
         setTimeout(() => promptInput.style.borderColor = 'rgba(255,255,255,0.1)', 1000);
         return;
     }
 
-    // UI Loading State
+    // Loading State
     btn.disabled = true;
     btnSpan.textContent = 'Dreaming...';
     btnIcon.className = 'fas fa-spinner fa-spin'; 
@@ -71,7 +57,12 @@ function generateImage() {
     fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: prompt, style: style, aspect_ratio: ratio })
+        body: JSON.stringify({ 
+            prompt: prompt, 
+            style: style, 
+            aspect_ratio: ratio,
+            seed: seed
+        })
     })
     .then(response => response.json())
     .then(data => {
@@ -81,7 +72,7 @@ function generateImage() {
                 preview.style.display = 'block';
                 loader.style.display = 'none';
             };
-            loadHistory(); // Refresh history
+            loadHistory();
         } else {
             handleError(empty, loader, data.error);
         }
@@ -91,11 +82,39 @@ function generateImage() {
         handleError(empty, loader, "Network error");
     })
     .finally(() => {
-        // Reset Button
         btn.disabled = false;
         btnSpan.textContent = 'Generate Art';
         btnIcon.className = 'fas fa-wand-magic-sparkles';
     });
+}
+
+function enhancePrompt() {
+    const promptInput = document.getElementById('promptInput');
+    const enhancers = [
+        "highly detailed", "8k resolution", "masterpiece", 
+        "cinematic lighting", "sharp focus", "intricate details"
+    ];
+    
+    let currentVal = promptInput.value.trim();
+    if(currentVal) {
+        if(!currentVal.toLowerCase().includes("8k")) {
+            promptInput.value = currentVal + ", " + enhancers.join(", ");
+        }
+    } else {
+        promptInput.placeholder = "Enter a basic idea first, then click Enhance!";
+    }
+}
+
+function toggleAdvanced() {
+    const opts = document.getElementById('advancedOptions');
+    const icon = document.getElementById('advIcon');
+    opts.classList.toggle('show');
+    
+    if(opts.classList.contains('show')) {
+        icon.className = 'fas fa-chevron-down';
+    } else {
+        icon.className = 'fas fa-chevron-right';
+    }
 }
 
 function handleError(emptyState, loader, msg) {
@@ -123,7 +142,6 @@ function loadHistory() {
                 const preview = document.getElementById('previewImage');
                 const empty = document.getElementById('emptyState');
                 
-                // Show loader briefly to make it feel responsive
                 preview.style.opacity = '0.5';
                 preview.src = item.image_data;
                 
@@ -139,12 +157,3 @@ function loadHistory() {
         });
     });
 }
-
-function scrollToHistory() {
-    const section = document.querySelector('.history-section');
-    if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
-        section.style.backgroundColor = 'rgba(255,255,255,0.05)';
-        setTimeout(() => section.style.backgroundColor = 'transparent', 500);
-    }
-} 

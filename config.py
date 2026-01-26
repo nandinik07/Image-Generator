@@ -11,5 +11,3 @@ class Config:
     # We use strip() to remove any accidental quotes (e.g. "sk-...") from the .env file
     _key = os.getenv('SILICONFLOW_API_KEY', '')
     SILICONFLOW_API_KEY = _key.strip().strip('"').strip("'")
-    
-    UPLOAD_FOLDER = 'static/generations'

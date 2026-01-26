@@ -8,8 +8,10 @@
 <body class="auth-container">
     <div class="auth-card">
         <div style="text-align: center; margin-bottom: 2rem;">
-            <h2 style="margin: 0;">Welcome Back</h2>
-            <p style="color: var(--text-muted);">Enter your credentials to access the studio.</p>
+            <h2 style="margin: 0;">{{ 'Welcome Back' if mode == 'login' else 'Join the Studio' }}</h2>
+            <p style="color: var(--text-muted);">
+                {{ 'Enter your credentials to access the studio.' if mode == 'login' else 'Create your account to start generating.' }}
+            </p>
         </div>
 
         {% if error %}
@@ -19,8 +21,11 @@
         {% endif %}
 
         <form action="{{ request.path }}" method="POST">
-            <input type="email" name="email" class="auth-input" placeholder="Email Address" required>
+            <input type="email" name="email" class="auth-input" placeholder="Email Address" value="{{ email if email else '' }}" required>
             <input type="password" name="password" class="auth-input" placeholder="Password" required>
+            {% if mode == 'signup' %}
+                <input type="text" name="name" class="auth-input" placeholder="Your Name (Optional)">
+            {% endif %}
             <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
                 {{ 'Sign In' if mode == 'login' else 'Create Account' }}
             </button>
@@ -32,10 +37,6 @@
             {% else %}
             Already have an account? <a href="/login" style="color: var(--primary);">Log In</a>
             {% endif %}
-        </div>
-        
-        <div style="text-align: center; margin-top: 1rem; font-size: 0.8rem; color: #64748b;">
-            Demo: test@example.com / password
         </div>
     </div>
 </body>
