@@ -148,14 +148,6 @@ body.landing-page {
 .btn-outline { border: 1px solid var(--border); color: white; background: transparent; }
 .btn-outline:hover { background: rgba(255,255,255,0.05); }
 
-/* Advanced Toggle */
-.advanced-toggle {
-    font-size: 0.8rem; color: var(--text-muted); cursor: pointer; 
-    display: flex; align-items: center; gap: 5px; margin-bottom: 1rem;
-}
-.advanced-toggle:hover { color: white; }
-.advanced-options { display: none; margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem; }
-.advanced-options.show { display: block; animation: slideDown 0.3s ease-out; }
 
 @keyframes slideDown {
     from { opacity: 0; transform: translateY(-10px); }

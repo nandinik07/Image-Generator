@@ -7,6 +7,7 @@ from services.image_service import ImageService
 import json
 import requests
 import io
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = Config.SECRET_KEY
@@ -47,18 +48,47 @@ def gallery():
     conn.close()
     return render_template('gallery.html', creations=creations)
 
-# NEW: Profile Page
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     conn = get_db_connection()
+    msg = None
+    msg_type = None
+
+    # Handle Profile Update
+    if request.method == 'POST':
+        name = request.form.get('name')
+        password = request.form.get('password')
+        
+        try:
+            if password and password.strip():
+                # Update Name and Password
+                hashed = generate_password_hash(password)
+                conn.execute('UPDATE users SET name = ?, password = ? WHERE id = ?', 
+                           (name, hashed, session['user_id']))
+            else:
+                # Update Name Only
+                conn.execute('UPDATE users SET name = ? WHERE id = ?', 
+                           (name, session['user_id']))
+            
+            conn.commit()
+            
+            # Update session data
+            session['user_name'] = name
+            msg = "Profile updated successfully!"
+            msg_type = "success"
+            
+        except Exception as e:
+            msg = "Error updating profile."
+            msg_type = "error"
+            print(f"Profile Update Error: {e}")
+
+    # Fetch User Data
     user = conn.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],)).fetchone()
-    
-    # Get stats
     creation_count = conn.execute('SELECT COUNT(*) FROM creations WHERE user_id = ?', (session['user_id'],)).fetchone()[0]
-    
     conn.close()
-    return render_template('profile.html', user=user, creation_count=creation_count)
+
+    return render_template('profile.html', user=user, creation_count=creation_count, msg=msg, msg_type=msg_type)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -66,7 +96,6 @@ def login():
     email = ""
     
     if request.method == 'POST':
-        # Normalize email
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '').strip()
         
@@ -74,7 +103,6 @@ def login():
         user = conn.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
         conn.close()
         
-        # Check real database hash
         if user and check_password_hash(user['password'], password):
             session['user_id'] = user['id']
             session['user_name'] = user['name']
@@ -127,6 +155,7 @@ def logout():
 @app.route('/api/generate', methods=['POST'])
 @login_required
 def generate():
+    # Unlimited generations
     data = request.json
     prompt = data.get('prompt')
     style = data.get('style', 'Cinematic')
@@ -137,14 +166,16 @@ def generate():
         return jsonify({'error': 'Prompt is required'}), 400
 
     size = "1024x1024" 
-    if aspect_ratio == "Portrait": size = "1024x1024" 
-    elif aspect_ratio == "Landscape": size = "1024x1024"
+    if aspect_ratio == "Portrait": 
+        size = "576x1024"
+    elif aspect_ratio == "Landscape": 
+        size = "1024x576"
 
     try:
         # Call Service
         image_url = ImageService.generate_image(prompt, style, size, seed)
         
-        # Save to History for the SESSION user
+        # Save to History
         conn = get_db_connection()
         conn.execute('INSERT INTO creations (user_id, prompt, style, aspect_ratio, image_data) VALUES (?, ?, ?, ?, ?)',
                      (session['user_id'], prompt, style, aspect_ratio, image_url))
@@ -161,7 +192,6 @@ def generate():
 @login_required
 def get_history():
     conn = get_db_connection()
-    # Fetch history for the SESSION user
     creations = conn.execute('SELECT * FROM creations WHERE user_id = ? ORDER BY created_at DESC', 
                            (session['user_id'],)).fetchall()
     conn.close()
@@ -171,7 +201,6 @@ def get_history():
 @login_required
 def download_image(image_id):
     conn = get_db_connection()
-    # Ensure user owns the image before downloading
     image = conn.execute('SELECT * FROM creations WHERE id = ? AND user_id = ?', 
                        (image_id, session['user_id'])).fetchone()
     conn.close()

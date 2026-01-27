@@ -23,14 +23,12 @@ function generateImage() {
     const promptInput = document.getElementById('promptInput');
     const styleSelect = document.getElementById('styleSelect');
     const ratioSelect = document.getElementById('ratioSelect');
-    const seedInput = document.getElementById('seedInput'); 
     
     if (!promptInput || !styleSelect || !ratioSelect) return;
 
     const prompt = promptInput.value;
     const style = styleSelect.value;
     const ratio = ratioSelect.value;
-    const seed = seedInput ? seedInput.value : null;
     
     // UI Updates
     const btnSpan = btn.querySelector('span');
@@ -60,8 +58,7 @@ function generateImage() {
         body: JSON.stringify({ 
             prompt: prompt, 
             style: style, 
-            aspect_ratio: ratio,
-            seed: seed
+            aspect_ratio: ratio
         })
     })
     .then(response => response.json())
@@ -105,15 +102,16 @@ function enhancePrompt() {
     }
 }
 
-function toggleAdvanced() {
-    const opts = document.getElementById('advancedOptions');
-    const icon = document.getElementById('advIcon');
-    opts.classList.toggle('show');
-    
-    if(opts.classList.contains('show')) {
-        icon.className = 'fas fa-chevron-down';
-    } else {
-        icon.className = 'fas fa-chevron-right';
+function toggleEditProfile() {
+    const section = document.getElementById('editProfileSection');
+    if (section) {
+        if (section.style.display === 'none' || !section.style.display) {
+            section.style.display = 'block';
+            section.style.animation = 'slideDown 0.3s ease-out';
+            section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            section.style.display = 'none';
+        }
     }
 }
 

@@ -8,7 +8,6 @@
 </head>
 <body>
     <div class="app-layout">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <a href="{{ url_for('index') }}" class="sidebar-icon" title="Home"><i class="fas fa-cube"></i></a>
             <a href="{{ url_for('dashboard') }}" class="sidebar-icon active" title="Studio"><i class="fas fa-magic"></i></a>
@@ -21,13 +20,11 @@
         </aside>
 
         <div class="main-area">
-            <!-- Left Controls -->
             <div class="control-panel">
                 <div class="panel-header">
                     <h2><i class="fas fa-sliders-h"></i> Configuration</h2>
                 </div>
                 
-                <!-- Fixed Input Section -->
                 <div class="input-section">
                     <div class="input-group">
                         <div class="label">
@@ -65,38 +62,24 @@
                         </div>
                     </div>
 
-                    <!-- Advanced Toggle -->
-                    <div class="advanced-toggle" onclick="toggleAdvanced()">
-                        <i class="fas fa-chevron-right" id="advIcon"></i> Advanced Options
-                    </div>
-                    <div id="advancedOptions" class="advanced-options">
-                        <div class="input-group">
-                            <label class="label">SEED (Optional)</label>
-                            <input type="number" id="seedInput" class="input-text" placeholder="Random">
-                            <div style="font-size: 0.7rem; color: #64748b; margin-top: 4px;">Use same seed for similar results.</div>
-                        </div>
-                    </div>
+                    
 
-                    <!-- Button -->
-                    <button id="genBtn" class="btn btn-primary" onclick="generateImage()">
+                    <button id="genBtn" class="btn btn-primary" onclick="generateImage()" title="Generate Image">
                         <span>Generate Art</span>
                         <i class="fas fa-wand-magic-sparkles"></i>
                     </button>
                 </div>
 
-                <!-- Scrollable History Section -->
                 <div class="history-section">
                     <div class="history-header">
                         <label class="label">RECENT CREATIONS</label>
                         <span class="badge" id="historyCount">0</span>
                     </div>
                     <div id="historyGrid" class="history-grid">
-                        <!-- Populated by JS -->
-                    </div>
+                        </div>
                 </div>
             </div>
 
-            <!-- Right Canvas -->
             <div class="canvas-area">
                 <div class="generated-view">
                     <span id="loader" class="loader"></span>
